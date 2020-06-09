@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*
 #include "lib/util.h"
 #include "lib/core.h"
 #define max(a,b) (((a) > (b)) ? (a) : (b))
+
 // Prints color map from image file [not from program's global array]
 void printColorMap(struct color *image, int width, int height) {
     long long int image_size = sizeof(*image)*width*height;
