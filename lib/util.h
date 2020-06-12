@@ -73,6 +73,7 @@ void printNBDArray(int height, int width) {
         for(j=1; j<=width; j++) {
             printf("%d ", nbd_dist[i][j]);
         }
+        printf("\n");
     }
 }
 
