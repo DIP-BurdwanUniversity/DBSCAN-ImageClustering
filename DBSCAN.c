@@ -110,7 +110,7 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
 
     EightNeighbourDistance(height, width);
     // Smoothing factor to normalize uneven densities...
-    normalize_density(height, width, smoothing_factor);
+    // normalize_density(height, width, smoothing_factor);
     printNBDArray(height, width);
 
     scale_density_to_image(height, width);
