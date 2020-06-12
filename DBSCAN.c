@@ -53,20 +53,19 @@ void EightNeighbourDistance(int height, int width) {
             nbd_dist[i][j] = (int) round(max_density)/8;
         }
     }
-    printf("\nRose OK");
 }
 
 void normalize_density(int height, int width, int factor) {
     int i, j, k, l;
     // Visited array to mark pixels already normalized and hence not to be modified
-    int visited_pixels[1000][1000];
+    int visited_pixels[MAX_IMAGE_HEIGHT+1][MAX_IMAGE_WIDTH+1];
+    printf("\nJisoo OK");
 
     for(i=1; i<=height; i++) {
         for(j=1; j<=width; j++) {
-            printf("\nJisoo OK");
             // Altering nbd_dist array with normalized density 
             if(visited_pixels[i][j]==0 && (i+factor>0) && (i+factor)<height && (j+factor>0) && (j+factor)<width) {
-                printf("\nJennie OK");
+                printf(".");
                 // Finding maximum pixel in smoothing range...
                 int maxm=-9999;
                 for(k=i-factor; k<=i+factor; k++) {
@@ -94,7 +93,7 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     int i, j, k, divisions, total_pixels, iterations, smoothing_factor;
     FILE *fp;
     char filename[100];
-    smoothing_factor=20;
+    smoothing_factor=50;
 
     // padding bits on image_arr matrix
     for(i=0; i<=height; i++) image_arr[0][i] = 0;
@@ -108,10 +107,11 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     }
 
     EightNeighbourDistance(height, width);
-    // printNBDArray(height, width);
 
     // Smoothing factor to normalize uneven densities...
+    printf("\nRose OK");
     normalize_density(height, width, smoothing_factor);
+    printf("\nJennie OK");
     printNBDArray(height, width);
 
 
