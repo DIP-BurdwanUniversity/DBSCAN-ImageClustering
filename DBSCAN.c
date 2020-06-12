@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.*
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 #include "lib/util.h"
 #include "lib/core.h"
 #define max(a,b) (((a) > (b)) ? (a) : (b))
@@ -106,10 +107,9 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     }
 
     EightNeighbourDistance(height, width);
-
     // Smoothing factor to normalize uneven densities...
     normalize_density(height, width, smoothing_factor);
-    // printNBDArray(height, width);
+    printNBDArray(height, width);
 
 
     /* Prepare image file code starts now */
@@ -158,11 +158,9 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     return 0;
 }
 
-
-
-
-
 int main() {
+    time_t start, end;
+    time(&start);
     char filename[100];                 // Holds input BMP Image filename
     FILE *fp;
     int i,j;                            // Loop variables
@@ -229,6 +227,8 @@ int main() {
     status = processing(image, header1.width, header1.height, header0, header1);
     if(status == -1) printf("\nFailed to successfully process image\n");
     else printf("\nSuccessfully clustered image\n");
-
+    time(&end);
+    double time_taken = (double)(end - start);
+    printf("\nExecution time: %.5lf\n", time_taken);
     return 0;
 }
