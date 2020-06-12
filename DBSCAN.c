@@ -60,15 +60,15 @@ void normalize_density(int height, int width, int factor) {
     int i, j, k, l;
     // Visited array to mark pixels already normalized and hence not to be modified
     int visited_pixels[MAX_IMAGE_HEIGHT+1][MAX_IMAGE_WIDTH+1];
-
-    for(i=1; i<=height; i+=factor) {
-        for(j=1; j<=width; j+=factor) {
+    memset(visited_pixels, 0, sizeof(visited_pixels));
+    for(i=1; i<=height; i++) {
+        for(j=1; j<=width; j++) {
 
             // Altering nbd_dist array with normalized density 
-            if((i+factor>0) && (i+factor)<height && (j+factor>0) && (j+factor)<width && visited_pixels[i][j]==0) {
+            if((i+factor>0) && (i+factor)<=height && (j+factor>0) && (j+factor)<=width && visited_pixels[i][j]==0) {
 
                 // Finding maximum pixel in smoothing range...
-                int maxm=-9999;
+                int maxm=-999;
                 for(k=i-factor; k<=i+factor; k++) {
                     for(l=j-factor; l<=j+factor; j++) {
                         if((k+factor>0) && (k+factor)<height && (l+factor>0) && (l+factor)<width && nbd_dist[k][l] > maxm) {
@@ -78,7 +78,7 @@ void normalize_density(int height, int width, int factor) {
                 }
                 for(k=i-factor; k<=i+factor; k++) {
                     for(l=j-factor; l<=j+factor; j++) {
-                        if((k+factor>0) && (k+factor)<height && (l+factor>0) && (l+factor)<width) {
+                        if((k+factor>0) && (k+factor)<=height && (l+factor>0) && (l+factor)<=width) {
                             nbd_dist[k][l] = maxm;
                             visited_pixels[k][l]=1;
                         }
@@ -111,7 +111,7 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     EightNeighbourDistance(height, width);
     // Smoothing factor to normalize uneven densities...
     // normalize_density(height, width, smoothing_factor);
-    printNBDArray(height, width);
+    // printNBDArray(height, width);
 
     scale_density_to_image(height, width);
 

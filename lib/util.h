@@ -16,7 +16,7 @@ void scale_density_to_image(int height, int width) {
     int i,j;
     for(i=1; i<=height; i++) {
         for(j=1; j<width; j++) {
-            nbd_dist[i][j] = (nbd_dist[i][j]*10) + 15;
+            nbd_dist[i][j] = (nbd_dist[i][j]*10) + 50;
         }
     }
 }
