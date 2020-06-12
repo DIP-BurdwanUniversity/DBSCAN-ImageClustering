@@ -40,14 +40,14 @@ void EightNeighbourDistance(int height, int width) {
     int east, west, north, south, northeast, northwest, southeast, southwest, max_density;
     for(i=1; i<=height; i++) {
         for(j=1; j<=width; j++) {
-            east = image_arr[i][j+1] - image_arr[i][j];
-            west = image_arr[i][j-1] - image_arr[i][j];
-            north = image_arr[i-1][j] - image_arr[i][j];
-            south = image_arr[i+1][j] - image_arr[i][j];
-            northeast = image_arr[i-1][j+1] - image_arr[i][j];
-            northwest = image_arr[i-1][j-1] - image_arr[i][j];
-            southeast = image_arr[i+1][j+1] - image_arr[i][j];
-            southwest = image_arr[i+1][j-1] - image_arr[i][j];
+            east = abs(image_arr[i][j+1] - image_arr[i][j]);
+            west = abs(image_arr[i][j-1] - image_arr[i][j]);
+            north = abs(image_arr[i-1][j] - image_arr[i][j]);
+            south = abs(image_arr[i+1][j] - image_arr[i][j]);
+            northeast = abs(image_arr[i-1][j+1] - image_arr[i][j]);
+            northwest = abs(image_arr[i-1][j-1] - image_arr[i][j]);
+            southeast = abs(image_arr[i+1][j+1] - image_arr[i][j]);
+            southwest = abs(image_arr[i+1][j-1] - image_arr[i][j]);
 
             max_density = max(east, max(west, max(north, max(south, max(northwest, max(northeast, max(southwest, southeast)))))));
             nbd_dist[i][j] = (int) round(max_density)/8;
@@ -59,13 +59,13 @@ void normalize_density(int height, int width, int factor) {
     int i, j, k, l;
     // Visited array to mark pixels already normalized and hence not to be modified
     int visited_pixels[MAX_IMAGE_HEIGHT+1][MAX_IMAGE_WIDTH+1];
-    printf("\nJisoo OK");
 
     for(i=1; i<=height; i++) {
         for(j=1; j<=width; j++) {
+
             // Altering nbd_dist array with normalized density 
             if(visited_pixels[i][j]==0 && (i+factor>0) && (i+factor)<height && (j+factor>0) && (j+factor)<width) {
-                printf(".");
+
                 // Finding maximum pixel in smoothing range...
                 int maxm=-9999;
                 for(k=i-factor; k<=i+factor; k++) {
@@ -84,7 +84,6 @@ void normalize_density(int height, int width, int factor) {
             }
         }
     }
-    printf("\nLisa OK");
 }
 
 
@@ -109,10 +108,8 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     EightNeighbourDistance(height, width);
 
     // Smoothing factor to normalize uneven densities...
-    printf("\nRose OK");
     normalize_density(height, width, smoothing_factor);
-    printf("\nJennie OK");
-    printNBDArray(height, width);
+    // printNBDArray(height, width);
 
 
     /* Prepare image file code starts now */
