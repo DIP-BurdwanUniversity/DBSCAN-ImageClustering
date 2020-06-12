@@ -61,25 +61,27 @@ void normalize_density(int height, int width, int factor) {
     // Visited array to mark pixels already normalized and hence not to be modified
     int visited_pixels[MAX_IMAGE_HEIGHT+1][MAX_IMAGE_WIDTH+1];
 
-    for(i=1; i<=height; i++) {
-        for(j=1; j<=width; j++) {
+    for(i=1; i<=height; i+=factor) {
+        for(j=1; j<=width; j+=factor) {
 
             // Altering nbd_dist array with normalized density 
-            if(visited_pixels[i][j]==0 && (i+factor>0) && (i+factor)<height && (j+factor>0) && (j+factor)<width) {
+            if((i+factor>0) && (i+factor)<height && (j+factor>0) && (j+factor)<width && visited_pixels[i][j]==0) {
 
                 // Finding maximum pixel in smoothing range...
                 int maxm=-9999;
                 for(k=i-factor; k<=i+factor; k++) {
                     for(l=j-factor; l<=j+factor; j++) {
-                        if(nbd_dist[k][l] > maxm) {
+                        if((k+factor>0) && (k+factor)<height && (l+factor>0) && (l+factor)<width && nbd_dist[k][l] > maxm) {
                             maxm = nbd_dist[k][l];
                         }
                     }
                 }
                 for(k=i-factor; k<=i+factor; k++) {
                     for(l=j-factor; l<=j+factor; j++) {
-                        nbd_dist[k][l] = maxm;
-                        visited_pixels[k][l]=1;
+                        if((k+factor>0) && (k+factor)<height && (l+factor>0) && (l+factor)<width) {
+                            nbd_dist[k][l] = maxm;
+                            visited_pixels[k][l]=1;
+                        }
                     }
                 }
             }
@@ -111,50 +113,50 @@ int processing(struct color *image, int width, int height, struct bmpheader h0, 
     normalize_density(height, width, smoothing_factor);
     printNBDArray(height, width);
 
+    scale_density_to_image(height, width);
 
     /* Prepare image file code starts now */
 
     // Write modified image array to file...
-    // printf("\nEnter name of clustered image file: ");
-    // scanf("%s", filename);
-    // if((fp=fopen(filename, "wb")) == NULL) {
-    //     printf("\nError, creating BMP file\n");
-    //     return -1;
-    // }
+    printf("\nEnter name of clustered image file: ");
+    scanf("%s", filename);
+    if((fp=fopen(filename, "wb")) == NULL) {
+        printf("\nError, creating BMP file\n");
+        return -1;
+    }
 
-    // fwrite(&h0.id1, 1, sizeof(h0.id1), fp);
-    // fwrite(&h0.id2, 1, sizeof(h0.id2), fp);
-    // fwrite(&h0.size, 1, sizeof(h0.size), fp);
-    // fwrite(&h0.app_spec_1, 1, sizeof(h0.app_spec_1), fp);
-    // fwrite(&h0.app_spec_2, 1, sizeof(h0.app_spec_2), fp);
-    // fwrite(&h0.offset, 1, sizeof(h0.offset), fp);
+    fwrite(&h0.id1, 1, sizeof(h0.id1), fp);
+    fwrite(&h0.id2, 1, sizeof(h0.id2), fp);
+    fwrite(&h0.size, 1, sizeof(h0.size), fp);
+    fwrite(&h0.app_spec_1, 1, sizeof(h0.app_spec_1), fp);
+    fwrite(&h0.app_spec_2, 1, sizeof(h0.app_spec_2), fp);
+    fwrite(&h0.offset, 1, sizeof(h0.offset), fp);
     
-    // fwrite(&h1.size, 1, sizeof(h1.size), fp);
-    // fwrite(&h1.width, 1, sizeof(h1.width), fp);
-    // fwrite(&h1.height, 1, sizeof(h1.height), fp);
-    // fwrite(&h1.color_planes, 1, sizeof(h1.color_planes), fp);
-    // fwrite(&h1.bits_per_pixel, 1, sizeof(h1.bits_per_pixel), fp);
-    // fwrite(&h1.compression, 1, sizeof(h1.compression), fp);
-    // fwrite(&h1.size_with_padding, 1, sizeof(h1.size_with_padding), fp);
-    // fwrite(&h1.resolution_horizontal, 1, sizeof(h1.resolution_horizontal), fp);
-    // fwrite(&h1.resolution_vertical, 1, sizeof(h1.resolution_vertical), fp);
-    // fwrite(&h1.color_palette, 1, sizeof(h1.color_palette), fp);
-    // fwrite(&h1.important_colors, 1, sizeof(h1.important_colors), fp);
+    fwrite(&h1.size, 1, sizeof(h1.size), fp);
+    fwrite(&h1.width, 1, sizeof(h1.width), fp);
+    fwrite(&h1.height, 1, sizeof(h1.height), fp);
+    fwrite(&h1.color_planes, 1, sizeof(h1.color_planes), fp);
+    fwrite(&h1.bits_per_pixel, 1, sizeof(h1.bits_per_pixel), fp);
+    fwrite(&h1.compression, 1, sizeof(h1.compression), fp);
+    fwrite(&h1.size_with_padding, 1, sizeof(h1.size_with_padding), fp);
+    fwrite(&h1.resolution_horizontal, 1, sizeof(h1.resolution_horizontal), fp);
+    fwrite(&h1.resolution_vertical, 1, sizeof(h1.resolution_vertical), fp);
+    fwrite(&h1.color_palette, 1, sizeof(h1.color_palette), fp);
+    fwrite(&h1.important_colors, 1, sizeof(h1.important_colors), fp);
 
-    // printf("Debug: File pointer is at %d bytes\n", ftell(fp));
+    printf("Debug: File pointer is at %d bytes\n", ftell(fp));
 
 
-    // // Copy modified pixels...
-    // fseek(fp,54,SEEK_SET);
+    // Copy modified pixels...
+    fseek(fp,54,SEEK_SET);
 
-    // for(i=0; i<height; i++) {
-    //     for(j=0; j<width; j++) {
-    //         fwrite(&image_arr[i][j],1,sizeof(unsigned char),fp);
-    //         fwrite(&image_arr[i][j],1,sizeof(unsigned char),fp);
-    //         fwrite(&image_arr[i][j],1,sizeof(unsigned char),fp);
-    //     }
-    // }
-
+    for(i=0; i<height; i++) {
+        for(j=0; j<width; j++) {
+            fwrite(&nbd_dist[i][j],1,sizeof(unsigned char),fp);
+            fwrite(&nbd_dist[i][j],1,sizeof(unsigned char),fp);
+            fwrite(&nbd_dist[i][j],1,sizeof(unsigned char),fp);
+        }
+    }
     return 0;
 }
 
@@ -229,6 +231,6 @@ int main() {
     else printf("\nSuccessfully clustered image\n");
     time(&end);
     double time_taken = (double)(end - start);
-    printf("\nExecution time: %.5lf\n", time_taken);
+    printf("\nExecution time: %.5lf seconds\n", time_taken);
     return 0;
 }
